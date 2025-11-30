@@ -14,13 +14,15 @@ public class BookController : ControllerBase
     }  
 
     [HttpPost]
-    public void AddNewBook(Book bookInfo)
+    public void AddNewBook([FromBody] Book bookInfo)
     {
+        //check if the model is valid?
+        //validate if there is any book with the same name exists?
         _bookService.AddBook(bookInfo);
     }
 
     [HttpPost]
-    [Route("{id:int:min(1)}")]
+    [Route("{id:int:min(1)}/checkout")]
     public void CheckoutBook(int id,[FromBody] string checkedoutUser)
     {
         _bookService.CheckoutBook(id, checkedoutUser);
@@ -33,7 +35,7 @@ public class BookController : ControllerBase
     }
 
     [HttpPost]
-    [Route("{id:int:min(1)}")]
+    [Route("{id:int:min(1)}/return")]
     public void ReturnBook(int id)
     {
         _bookService.ReturnBook(id);
