@@ -1,5 +1,3 @@
-using Microsoft.OpenApi;
-
 namespace BookLendingServiceAWSSolution;
 
 public class Startup
@@ -38,7 +36,7 @@ public class Startup
         app.UseSwaggerUI(c =>
         {
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "Book Lending API V1");
-            c.RoutePrefix = "/";
+            c.RoutePrefix = string.Empty;
         });
 
         app.UseHttpsRedirection();
