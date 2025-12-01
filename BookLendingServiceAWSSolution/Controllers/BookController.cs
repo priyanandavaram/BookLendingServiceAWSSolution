@@ -14,18 +14,56 @@ public class BookController : ControllerBase
     }  
 
     [HttpPost]
-    public void AddNewBook([FromBody] Book bookInfo)
+    public IActionResult AddNewBook([FromBody] Book bookInfo)
     {
-        //check if the model is valid?
-        //validate if there is any book with the same name exists?
-        _bookService.AddBook(bookInfo);
+        if(!ModelState.IsValid)
+        {
+            return Conflict(new { message = "Invalid book information." });
+        }
+        else
+        {
+            var ifBookExists = _bookService.GetBookByName(bookInfo.BookTitle.ToLower());
+
+            if (ifBookExists)
+            {
+                return Conflict(new { message = "A book with the same title already exists." });
+            }
+            else
+            {
+                _bookService.AddBook(bookInfo);
+
+                return CreatedAtAction("Book has been added successfully.", new { id = bookInfo.Id }, bookInfo);
+
+            }
+        }
     }
 
     [HttpPost]
     [Route("{id:int:min(1)}/checkout")]
-    public void CheckoutBook(int id,[FromBody] string checkedoutUser)
+    public IActionResult CheckoutBook(int id,[FromBody] string checkedoutUser)
     {
-        _bookService.CheckoutBook(id, checkedoutUser);
+        if (string.IsNullOrWhiteSpace(checkedoutUser))
+        {
+            return BadRequest(new { message = "Checked-out user must be provided." });
+        }
+
+        Book bookInfo = _bookService.GetBookById(id);
+
+        if (bookInfo == null)
+        {
+            return NotFound(new { message = $"Book with id {id} not found." });
+        }
+
+        if (!bookInfo.IsBookAvailable)
+        {
+            return Conflict(new { message = "Book is already checked out." });
+        }
+        else
+        {
+            _bookService.CheckoutBook(id, checkedoutUser);
+
+            return Ok(new { message = $"Book '{bookInfo.BookTitle}' checked out by {checkedoutUser}." });
+        }
     }
 
     [HttpGet]
@@ -36,8 +74,24 @@ public class BookController : ControllerBase
 
     [HttpPost]
     [Route("{id:int:min(1)}/return")]
-    public void ReturnBook(int id)
+    public IActionResult ReturnBook(int id)
     {
-        _bookService.ReturnBook(id);
+        var bookInfo = _bookService.GetBookById(id);
+
+        if (bookInfo == null)
+        {
+            return NotFound(new { message = $"Book with id {id} was not found." });
+        }
+
+        if (bookInfo.IsBookAvailable)
+        {
+            return Conflict(new { message = "Book is not currently checked out." });
+        }
+        else
+        {
+            _bookService.ReturnBook(id);
+
+            return Ok(new { message = $"Book '{bookInfo.BookTitle}' has been returned successfully." });
+        }
     }
 }

@@ -7,39 +7,37 @@ namespace BookLendingServiceAWSSolution.Repository
     {
         private readonly List<Book> _books = new List<Book>();
 
-        public void AddBook(Book book)
+        public Book AddBook(Book book)
         {
             _books.Add(book);
+
+            return GetBookById(book.Id);
         }
 
-        public (string, bool) CheckoutBook(int bookId, string checkedoutUser)
+        public void CheckoutBook(int bookId, string checkedoutUser)
         {
-            var book = _books.FirstOrDefault(b => b.Id == bookId);
+            var bookInfo = GetBookById(bookId);
 
-            if (book != null)
-            {
-                if (book.IsBookAvailable)
-                {
-                    book.IsBookAvailable = false;
-                    book.CheckedOutUser = checkedoutUser;
-                    book.CheckedOutTime = DateTime.Now;
-                    return ("Book checkout successfully", true);
-                }
-                else
-                {
-                    return ("Book is unavaible", false);
-                }
-            }
-            else
-            {
-                return ("Book doesn't exists with that name", false);
-            }
-
+            bookInfo.IsBookAvailable = false;
+            bookInfo.CheckedOutUser = checkedoutUser;
+            bookInfo.CheckedOutTime = DateTime.Now;
         }
 
         public IEnumerable<Book> GetAllBooks()
         {
             return _books;
+        }
+
+        public Book GetBookById(int bookId)
+        {
+            return _books.FirstOrDefault(bookInfo => bookInfo.Id == bookId);
+        }
+
+        public bool GetBookByName(string bookName)
+        {
+            bool checkIfBookExists = _books.Any(bookInfo => bookInfo.BookTitle.Equals(bookName, StringComparison.OrdinalIgnoreCase));
+
+            return checkIfBookExists;
         }
 
         public void ReturnBook(int bookId)

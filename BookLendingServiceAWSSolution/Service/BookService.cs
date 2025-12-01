@@ -23,9 +23,9 @@ namespace BookLendingServiceAWSSolution.Service
             _bookRepository.AddBook(book);
         }
 
-        public (string, bool) CheckoutBook(int bookId, string checkedoutUser)
+        public void CheckoutBook(int bookId, string checkedoutUser)
         {
-            return _bookRepository.CheckoutBook(bookId, checkedoutUser);
+             _bookRepository.CheckoutBook(bookId, checkedoutUser);
         }
 
         public IEnumerable<Book> GetAllBooks()
@@ -33,9 +33,24 @@ namespace BookLendingServiceAWSSolution.Service
             return _bookRepository.GetAllBooks();
         }
 
+        public Book GetBookById(int bookId)
+        {
+            return _bookRepository.GetBookById(bookId);
+        }
+
+        public bool GetBookByName(string bookName)
+        {
+            return _bookRepository.GetBookByName(bookName);
+        }
+
         public void ReturnBook(int bookId)
         {
             _bookRepository.ReturnBook(bookId);
+        }
+
+        Book IBookOperations.AddBook(Book book)
+        {
+            throw new NotImplementedException();
         }
     }
 }
