@@ -10,7 +10,7 @@ namespace BookLendingServiceAWSSolution.Service
         {
             _bookRepository = bookRepository;
         }
-        public void AddBook(Book book)
+        public Book AddBook(Book book)
         {
             IEnumerable<Book> getBooks = _bookRepository.GetAllBooks();
 
@@ -20,7 +20,7 @@ namespace BookLendingServiceAWSSolution.Service
 
             book.Id = getLastBookId + 1;
 
-            _bookRepository.AddBook(book);
+            return _bookRepository.AddBook(book);
         }
 
         public void CheckoutBook(int bookId, string checkedoutUser)
@@ -46,11 +46,6 @@ namespace BookLendingServiceAWSSolution.Service
         public void ReturnBook(int bookId)
         {
             _bookRepository.ReturnBook(bookId);
-        }
-
-        Book IBookOperations.AddBook(Book book)
-        {
-            throw new NotImplementedException();
         }
     }
 }

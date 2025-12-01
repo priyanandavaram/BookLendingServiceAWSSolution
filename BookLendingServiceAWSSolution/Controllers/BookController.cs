@@ -32,7 +32,7 @@ public class BookController : ControllerBase
             {
                 _bookService.AddBook(bookInfo);
 
-                return CreatedAtAction("Book has been added successfully.", new { id = bookInfo.Id }, bookInfo);
+                return Ok(new { message = "Book has been added successfully.", book = bookInfo });
 
             }
         }
